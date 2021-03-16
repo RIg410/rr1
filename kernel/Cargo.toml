@@ -1,0 +1,12 @@
+[package]
+name = "kernel"
+version = "0.1.0"
+authors = ["Dm. Yakushev <rig410@yandex.ru>"]
+edition = "2018"
+
+[features]
+default = []
+bsp_rpi3 = []
+bsp_rpi4 = []
+
+[dependencies]

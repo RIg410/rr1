@@ -2,8 +2,6 @@
 ##
 ## Copyright (c) 2018-2021 Andre Richter <andre.o.richter@gmail.com>
 
-include utils/color.mk.in
-
 # Default to the RPi3
 BSP ?= rpi3
 
@@ -43,6 +41,7 @@ RUSTFLAGS_PEDANTIC = $(RUSTFLAGS) -D warnings -D missing_docs
 FEATURES      = --features bsp_$(BSP)
 COMPILER_ARGS = --target=$(TARGET) \
     $(FEATURES)                    \
+    --package=kernel				   \
     --release
 
 RUSTC_CMD   = cargo rustc $(COMPILER_ARGS)
@@ -65,6 +64,12 @@ DOCKER_TOOLS = $(DOCKER_CMD) $(DOCKER_IMAGE)
 EXEC_QEMU = $(QEMU_BINARY) -M $(QEMU_MACHINE_TYPE)
 
 .PHONY: all $(KERNEL_ELF) $(KERNEL_BIN) doc qemu clippy clean readelf objdump nm check
+
+define colorecho
+      @tput setaf 6 2> /dev/null || true
+      @echo $1
+      @tput sgr0 2> /dev/null || true
+endef
 
 all: $(KERNEL_BIN)
 

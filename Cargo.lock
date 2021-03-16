@@ -3,6 +3,21 @@
 version = 3
 
 [[package]]
+name = "aarch64"
+version = "0.1.0"
+dependencies = [
+ "cortex-a",
+ "qemu-exit",
+]
+
+[[package]]
+name = "arch"
+version = "0.1.0"
+dependencies = [
+ "aarch64",
+]
+
+[[package]]
 name = "cortex-a"
 version = "5.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -15,8 +30,8 @@ dependencies = [
 name = "kernel"
 version = "0.1.0"
 dependencies = [
+ "arch",
  "cortex-a",
- "qemu-exit",
  "register",
  "test-macros",
  "test-types",

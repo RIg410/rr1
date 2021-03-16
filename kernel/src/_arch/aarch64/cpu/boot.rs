@@ -29,7 +29,9 @@ use cortex_a::{asm, regs::*};
 ///   a stack for EL2.
 #[inline(always)]
 unsafe fn el2_to_el1_transition() -> ! {
-    use crate::runtime_init;
+    extern "Rust" {
+        fn runtime_init() -> !;
+    }
 
     // Enable timer counter registers for EL1.
     CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
@@ -53,7 +55,7 @@ unsafe fn el2_to_el1_transition() -> ! {
     );
 
     // Second, let the link register point to runtime_init().
-    ELR_EL2.set(runtime_init::runtime_init as *const () as u64);
+    ELR_EL2.set(runtime_init as *const () as u64);
 
     // Set up SP_EL1 (stack pointer), which will be used by EL1 once we "return" to it.
     SP_EL1.set(bsp::memory::phys_boot_core_stack_end().into_usize() as u64);

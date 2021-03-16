@@ -1,4 +1,8 @@
 [workspace]
 members = [
-    "kernel"
+    "kernel",
+    "test-infra/test-macros",
+    "test-infra/test-types",
+    "arch",
+    "arch/aarch64"
 ]

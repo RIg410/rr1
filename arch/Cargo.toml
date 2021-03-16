@@ -1,0 +1,12 @@
+[package]
+name = "arch"
+version = "0.1.0"
+authors = ["Dm. Yakushev <rig410@yandex.ru>"]
+edition = "2018"
+
+[dependencies]
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+aarch64 = { path = "aarch64" }
+
+[features]
+test_build = ["aarch64/test_build"]

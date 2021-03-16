@@ -11,41 +11,28 @@ lto = true
 default = []
 bsp_rpi3 = ["register"]
 bsp_rpi4 = ["register"]
-test_build = ["qemu-exit"]
-
-##--------------------------------------------------------------------------------------------------
-## Dependencies
-##--------------------------------------------------------------------------------------------------
+test_build = ["arch/test_build"]
 
 [dependencies]
-test-types = { path = "test-types" }
+test-types = { path = "../test-infra/test-types" }
+arch = { path = "../arch" }
 
-# Optional dependencies
 register = { version = "1.x.x", features = ["no_std_unit_tests"], optional = true }
-qemu-exit = { version = "1.x.x", optional = true }
 
-# Platform specific dependencies
 [target.'cfg(target_arch = "aarch64")'.dependencies]
 cortex-a = { version = "5.x.x" }
 
-##--------------------------------------------------------------------------------------------------
-## Testing
-##--------------------------------------------------------------------------------------------------
-
 [dev-dependencies]
-test-macros = { path = "test-macros" }
+test-macros = { path = "../test-infra/test-macros" }
 
-# Unit tests are done in the library part of the kernel.
 [lib]
 name = "libkernel"
 test = true
 
-# Disable unit tests for the kernel binary.
 [[bin]]
 name = "kernel"
 test = false
 
-# List of tests without harness.
 [[test]]
 name = "00_console_sanity"
 harness = false

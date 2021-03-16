@@ -18,4 +18,4 @@ pub mod smp;
 pub use arch_cpu::{nop, wait_forever};
 
 #[cfg(feature = "test_build")]
-pub use arch_cpu::{qemu_exit_failure, qemu_exit_success};
+pub use arch::qemu::{qemu_exit_failure, qemu_exit_success};

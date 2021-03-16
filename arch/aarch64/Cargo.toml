@@ -1,0 +1,12 @@
+[package]
+name = "aarch64"
+version = "0.1.0"
+authors = ["Dm. Yakushev <rig410@yandex.ru>"]
+edition = "2018"
+
+[dependencies]
+qemu-exit = { version = "1.x.x", optional = true }
+cortex-a = { version = "5.x.x" }
+
+[features]
+test_build = ["qemu-exit"]

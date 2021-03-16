@@ -11,7 +11,8 @@ ifeq ($(BSP),rpi3)
     KERNEL_BIN        = kernel8.img
     QEMU_BINARY       = qemu-system-aarch64
     QEMU_MACHINE_TYPE = raspi3
-    QEMU_RELEASE_ARGS = -d in_asm -display none
+    QEMU_RELEASE_ARGS = -serial stdio -display none
+    QEMU_TEST_ARGS    = $(QEMU_RELEASE_ARGS) -semihosting
     OBJDUMP_BINARY    = aarch64-none-elf-objdump
     NM_BINARY         = aarch64-none-elf-nm
     READELF_BINARY    = aarch64-none-elf-readelf
@@ -22,7 +23,8 @@ else ifeq ($(BSP),rpi4)
     KERNEL_BIN        = kernel8.img
     QEMU_BINARY       = qemu-system-aarch64
     QEMU_MACHINE_TYPE =
-    QEMU_RELEASE_ARGS = -d in_asm -display none
+	QEMU_RELEASE_ARGS = -serial stdio -display none
+    QEMU_TEST_ARGS    = $(QEMU_RELEASE_ARGS) -semihosting
     OBJDUMP_BINARY    = aarch64-none-elf-objdump
     NM_BINARY         = aarch64-none-elf-nm
     READELF_BINARY    = aarch64-none-elf-readelf
@@ -33,6 +35,15 @@ endif
 # Export for build.rs
 export LINKER_FILE
 
+# Testing-specific arguments
+ifdef TEST
+    ifeq ($(TEST),unit)
+        TEST_ARG = --lib
+    else
+        TEST_ARG = --test $(TEST)
+    endif
+endif
+
 QEMU_MISSING_STRING = "This board is not yet supported for QEMU."
 
 RUSTFLAGS          = -C link-arg=-T$(LINKER_FILE) $(RUSTC_MISC_ARGS)
@@ -41,13 +52,14 @@ RUSTFLAGS_PEDANTIC = $(RUSTFLAGS) -D warnings -D missing_docs
 FEATURES      = --features bsp_$(BSP)
 COMPILER_ARGS = --target=$(TARGET) \
     $(FEATURES)                    \
-    --package=kernel				   \
+    --package=kernel			   \
     --release
 
 RUSTC_CMD   = cargo rustc $(COMPILER_ARGS)
 DOC_CMD     = cargo doc $(COMPILER_ARGS)
 CLIPPY_CMD  = cargo clippy $(COMPILER_ARGS)
 CHECK_CMD   = cargo check $(COMPILER_ARGS)
+TEST_CMD    = cargo test $(COMPILER_ARGS)
 OBJCOPY_CMD = rust-objcopy \
     --strip-all            \
     -O binary
@@ -85,12 +97,33 @@ doc:
 	@$(DOC_CMD) --document-private-items --open
 
 ifeq ($(QEMU_MACHINE_TYPE),)
-qemu:
+qemu test:
 	$(call colorecho, "\n$(QEMU_MISSING_STRING)")
 else
 qemu: $(KERNEL_BIN)
 	$(call colorecho, "\nLaunching QEMU")
 	@$(DOCKER_QEMU) $(EXEC_QEMU) $(QEMU_RELEASE_ARGS) -kernel $(KERNEL_BIN)
+
+define KERNEL_TEST_RUNNER
+    #!/usr/bin/env bash
+
+    TEST_ELF=./../$$(echo $$1 | sed -e 's/.*target/target/g')
+    TEST_BINARY=./../$$(echo $$1.img | sed -e 's/.*target/target/g')
+
+    echo "$(EXEC_QEMU) $(QEMU_TEST_ARGS) -kernel $$TEST_BINARY"
+
+    $(OBJCOPY_CMD) $$TEST_ELF $$TEST_BINARY
+    $(DOCKER_TEST) ruby tests/runner.rb $(EXEC_QEMU) $(QEMU_TEST_ARGS) -kernel $$TEST_BINARY
+endef
+
+export KERNEL_TEST_RUNNER
+test: FEATURES += --features test_build
+test:
+	$(call colorecho, "\nCompiling test(s) - $(BSP)")
+	@mkdir -p target
+	@echo "$$KERNEL_TEST_RUNNER" > target/kernel_test_runner.sh
+	@chmod +x target/kernel_test_runner.sh
+	@RUSTFLAGS="$(RUSTFLAGS_PEDANTIC)" $(TEST_CMD) $(TEST_ARG)
 endif
 
 clippy:

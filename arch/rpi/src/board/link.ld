@@ -8,23 +8,15 @@ SECTIONS
     /* Set current address to the value from which the RPi starts execution */
     . = 0x80000;
 
-    __ro_start = .;
     .text :
     {
         *(.text._start) *(.text*)
-    }
-
-    .exception_vectors :
-    {
-        *(.exception_vectors*)
     }
 
     .rodata :
     {
         *(.rodata*)
     }
-    . = ALIGN(65536); /* Fill up to 64 KiB */
-    __ro_end = .;
 
     .data :
     {
@@ -42,11 +34,6 @@ SECTIONS
         . += 8;
         __bss_end_inclusive = . - 8;
     }
-    . = ALIGN(65536);
-    __data_end = .;
-
-    __ro_size = __ro_end - __ro_start;
-    __data_size = __data_end - __ro_end;
 
     /DISCARD/ : { *(.comment*) }
 }

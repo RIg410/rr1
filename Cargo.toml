@@ -3,6 +3,5 @@ members = [
     "kernel",
     "test-infra/test-macros",
     "test-infra/test-types",
-    "arch",
-    "arch/aarch64"
+    "arch/rpi"
 ]

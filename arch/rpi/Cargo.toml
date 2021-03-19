@@ -1,0 +1,14 @@
+[package]
+name = "aarch_rpi"
+version = "0.1.0"
+authors = ["Dm. Yakushev <rig410@yandex.ru>"]
+edition = "2018"
+
+[features]
+bsp_rpi3 = []
+bsp_rpi4 = []
+test_build = []
+
+[dependencies]
+register = { version = "1.x.x", features = ["no_std_unit_tests"] }
+cortex-a = { version = "5.x.x" }

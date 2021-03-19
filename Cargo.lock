@@ -3,18 +3,11 @@
 version = 3
 
 [[package]]
-name = "aarch64"
+name = "aarch_rpi"
 version = "0.1.0"
 dependencies = [
  "cortex-a",
- "qemu-exit",
-]
-
-[[package]]
-name = "arch"
-version = "0.1.0"
-dependencies = [
- "aarch64",
+ "register",
 ]
 
 [[package]]
@@ -30,9 +23,7 @@ dependencies = [
 name = "kernel"
 version = "0.1.0"
 dependencies = [
- "arch",
- "cortex-a",
- "register",
+ "aarch_rpi",
  "test-macros",
  "test-types",
 ]
@@ -45,12 +36,6 @@ checksum = "1e0704ee1a7e00d7bb417d0770ea303c1bccbabf0ef1667dae92b5967f5f8a71"
 dependencies = [
  "unicode-xid",
 ]
-
-[[package]]
-name = "qemu-exit"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "702abe3c3255be20a4d67bda326c4117081a49a57afaf752de4845091bc6b476"
 
 [[package]]
 name = "quote"

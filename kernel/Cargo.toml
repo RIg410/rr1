@@ -9,34 +9,29 @@ lto = true
 
 [features]
 default = []
-bsp_rpi3 = ["register"]
-bsp_rpi4 = ["register"]
+bsp_rpi3 = ["arch", "arch/bsp_rpi3"]
+bsp_rpi4 = ["arch", "arch/bsp_rpi4"]
 test_build = ["arch/test_build"]
 
 [dependencies]
 test-types = { path = "../test-infra/test-types" }
-arch = { path = "../arch" }
-
-register = { version = "1.x.x", features = ["no_std_unit_tests"], optional = true }
-
-[target.'cfg(target_arch = "aarch64")'.dependencies]
-cortex-a = { version = "5.x.x" }
+arch = { path = "../arch/rpi", optional = true, package = "aarch_rpi" }
 
 [dev-dependencies]
 test-macros = { path = "../test-infra/test-macros" }
 
-[lib]
-name = "libkernel"
-test = true
+#[lib]
+#name = "libkernel"
+#test = true
 
 [[bin]]
 name = "kernel"
 test = false
 
-[[test]]
-name = "00_console_sanity"
-harness = false
-
-[[test]]
-name = "02_exception_sync_page_fault"
-harness = false
+#[[test]]
+#name = "00_console_sanity"
+#harness = false
+#
+#[[test]]
+#name = "02_exception_sync_page_fault"
+#harness = false

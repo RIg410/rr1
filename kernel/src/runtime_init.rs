@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-//
-// Copyright (c) 2018-2021 Andre Richter <andre.o.richter@gmail.com>
-
 //! Rust runtime initialization code.
-
-use crate::{bsp, memory};
 
 //--------------------------------------------------------------------------------------------------
 // Private Code
 //--------------------------------------------------------------------------------------------------
+
+use crate::memory;
+use arch::board::memory::bss_range_inclusive;
 
 /// Zero out the .bss section.
 ///
@@ -17,7 +14,7 @@ use crate::{bsp, memory};
 /// - Must only be called pre `kernel_init()`.
 #[inline(always)]
 unsafe fn zero_bss() {
-    memory::zero_volatile(bsp::memory::bss_range_inclusive());
+    memory::zero_volatile(bss_range_inclusive());
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -32,10 +29,7 @@ unsafe fn zero_bss() {
 /// - Only a single core must be active and running this function.
 #[no_mangle]
 pub unsafe fn runtime_init() -> ! {
-    extern "Rust" {
-        fn kernel_init() -> !;
-    }
-
     zero_bss();
-    kernel_init()
+
+    crate::kernel_init()
 }
